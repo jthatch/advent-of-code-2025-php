@@ -29,7 +29,7 @@ class Day1 extends Day
     {
         $input = $this->parseInput($input);
 
-        // dial has 100 positions (1-100), wraps around at boundaries
+        // dial has 100 positions (0-99), wraps around at boundaries
         $dial      = 50;
         $zeroCount = 0;
 
@@ -39,11 +39,11 @@ class Day1 extends Day
             // rotate dial: R moves clockwise (+), L moves counter-clockwise (-)
             $dial += 'R' === $direction ? $distance : -$distance;
 
-            // wrap to 1-100 range: shift to 0-based, modulo wrap, shift back to 1-based
-            $dial = (($dial - 1) % 100 + 100) % 100 + 1;
+            // wrap to 0-99 range: modulo handles negatives via double-wrap pattern
+            $dial = ($dial % 100 + 100) % 100;
 
-            // count each time we land on position 100
-            if (100 === $dial) {
+            // count each time we land on position 0
+            if (0 === $dial) {
                 $zeroCount++;
             }
         });
@@ -72,7 +72,6 @@ class Day1 extends Day
 
         return collect($input)
             ->map(fn (string $line) => [$line[0], (int) mb_substr($line, 1)])
-            // todo: add any necessary transformations
         ;
     }
 }
