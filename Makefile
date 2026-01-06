@@ -82,7 +82,7 @@ ifneq ("$(wildcard vendor)", "")
 	@$(DOCKER_RUN) $(image-name) php $(PHP_CL_TWEAKS) run.php $(runArgs)
 else
 	@echo -e "\nFirst run detected! No vendor/ folder found, running composer update...\n"
-	make composer
+	make composer install
 	make run $(runArgs)
 endif
 endif
