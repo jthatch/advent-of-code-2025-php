@@ -52,15 +52,37 @@ class Day1 extends Day
     }
 
     /**
-     * Solve Part 2 of the day's problem.
+     * Solve Part 2 of the day's problem. now we need to count the number of times any "click" causes the dial to
+     * point to 0 even if it goes beyond it (e.g. dial: -10 R20 dial: 10 would go over 0)
      */
     public function solvePart2(mixed $input): int|string|null
     {
         $input = $this->parseInput($input);
 
-        // todo: implement solution for Part 2
+        // dial has 100 positions (0-99), wraps around at boundaries
+        $dial      = 50;
+        $zeroCount = 0;
 
-        return null;
+        $input->each(function (array $instruction) use (&$dial, &$zeroCount): void {
+            [$direction, $distance] = $instruction;
+
+            // count how many times we land on position 0 during this rotation
+            // calculate range of positions we'll visit and count 0s in that range
+            $start = $dial;
+            $end   = $dial + ('R' === $direction ? $distance : -$distance);
+
+            // count how many times 0 appears in range (start, end] (exclusive start, inclusive end)
+            // using floor division to handle negatives correctly
+            $zeroCount += match ($direction) {
+                'R' => (int) floor($end / 100)         - (int) floor($start / 100),
+                'L' => (int) floor(($start - 1) / 100) - (int) floor(($end - 1) / 100),
+            };
+
+            // wrap to 0-99 range: modulo handles negatives via double-wrap pattern
+            $dial = ($end % 100 + 100) % 100;
+        });
+
+        return $zeroCount;
     }
 
     /**
